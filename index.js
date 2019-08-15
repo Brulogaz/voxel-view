@@ -22,14 +22,15 @@ function View(three, opts) {
 
   if (!process.browser) return
 
-  this.createRenderer(opts)
+  this.createRenderer(opts.canvas)
   this.element = this.renderer.domElement
 }
 
-View.prototype.createRenderer = function(opts) {
-  opts = opts || {}
-  opts.antialias = opts.antialias || true
-  this.renderer = new THREE.WebGLRenderer(opts)
+View.prototype.createRenderer = function(canvas) {
+  this.renderer = new THREE.WebGLRenderer({
+    antialias: true,
+      canvas: canvas
+  })
   this.renderer.setSize(this.width, this.height)
   this.renderer.setClearColorHex(this.skyColor, 1.0)
   this.renderer.clear()
