@@ -1,9 +1,10 @@
 var THREE, temporaryPosition, temporaryVector
 const { DepthPass,SSAOEffect, EffectComposer, EffectPass, RenderPass, NormalPass,BlendFunction,MaskPass, ClearMaskPass,ClearPass } = require("postprocessing");
+
 module.exports = function(three, opts) {
   temporaryPosition = new three.Vector3
   temporaryVector = new three.Vector3
-  
+
   return new View(three, opts)
 }
 
@@ -34,9 +35,15 @@ View.prototype.createRenderer = function(canvas) {
     logarithmicDepthBuffer:true
   })
   this.renderer.shadowMap.enabled = true
+  this.renderer.autoClearDepth = false;
   this.renderer.autoClear = false;
   this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   this.renderer.setClearColor(this.skyColor, 1.0)
+
+}
+
+View.prototype.refreshSSAOSelection = function(selection)
+{
 
 }
 
@@ -49,6 +56,7 @@ View.prototype.bindToScene = function(scene,applyEffectPass) {
 
   let composer = new EffectComposer(this.renderer);
   composer.autoClear = false;
+  composer.autoClearDepth = false;
   this.effectComposers.push(composer);
   composer.setSize(this.width, this.height)
   this.renderer.clear();
@@ -56,6 +64,7 @@ View.prototype.bindToScene = function(scene,applyEffectPass) {
   scene.add(this.camera);
   let normalPass = new NormalPass(scene,this.camera);
   let renderPass = new RenderPass(scene, this.camera);
+  let depthPass = new DepthPass(scene, this.camera);
 
   renderPass.clear = applyEffectPass;
   renderPass.renderToScreen = false;
@@ -69,36 +78,24 @@ View.prototype.bindToScene = function(scene,applyEffectPass) {
       distanceFalloff: 0.5,
       rangeThreshold: 0.0015,
       rangeFalloff: 0.01,
-      luminanceInfluence: 0.3,
+      luminanceInfluence: 0.4,
       radius:15,
       scale: 0.35,
       bias: 1.1
     });
     let effectPass = new EffectPass(this.camera,ssaoEffect );
-    renderPass.renderToScreen = true;
-  //  effectPass.renderToScreen = true;
-   // effectPass.clear = true;
-   // normalPass.clear = true;
-    let clearPass = new ClearPass();
-   // composer.addPass(clearPass);
-    composer.createDepthTexture();
+    renderPass.renderToScreen = false;
+    effectPass.renderToScreen = true;
+    depthPass.renderToScreen = true;
     composer.addPass(normalPass);
+    composer.addPass(depthPass);
     composer.addPass(renderPass);
     composer.addPass(effectPass);
 
   }
   else {
-   // let depthPass = new DepthPass(this.scene,this.camera);
-    //composer.addPass(clearPass);
-    //  composer.addPass(this.maskPass);
-   // renderPassTerrain.clear = false;
-   //  renderPass.clear = false;
-   //  depthPass.clear = false;
-   // renderPass.setDepthTexture( this.effectComposers[0].createDepthTexture());
-   // composer.addPass(depthPass);
+    renderPass.clearDepth = false;
     composer.addPass(renderPass);
- //   depthPass.clear = false;
-   // depthPass.renderToScreen = true;
     renderPass.renderToScreen = true;
   }
 
