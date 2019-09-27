@@ -31,6 +31,7 @@ function View(three, opts) {
 View.prototype.createRenderer = function(canvas) {
   this.renderer = new THREE.WebGLRenderer({
     antialias: true,
+    alpha:true,
       canvas: canvas,
     logarithmicDepthBuffer:true
   })
@@ -38,7 +39,7 @@ View.prototype.createRenderer = function(canvas) {
   this.renderer.autoClearDepth = false;
   this.renderer.autoClear = false;
   this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  this.renderer.setClearColor(this.skyColor, 1.0)
+  this.renderer.setClearColor(this.skyColor, 0)
 
 }
 

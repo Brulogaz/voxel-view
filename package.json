@@ -1,6 +1,6 @@
 {
   "name": "voxel-view",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "a default camera & renderer for voxeljs",
   "main": "index.js",
   "scripts": {
